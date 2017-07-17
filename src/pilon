@@ -19,5 +19,4 @@ printf "[ %s: Running pilon ]\n" "$(date)"
     --output "tig00000001" \
     --outdir "${outdir}" \
     --tracks \
-    --dumpreads \
     &> "${pilon_log}"
