@@ -11,7 +11,7 @@ nanopore_assembly="test/tig00000001.fa"
 pe_reads="data/pe_merged.fastq.gz"
 bwa_log="${outdir}/bwamem.log"
 samtools_log="${outdir}/samtools.log"
-unsorted_bam="test/pe_mapped_unsorted.bam"
+unsorted_sam="test/pe_mapped_unsorted.sam"
 output_bam="test/pe_mapped.bam"
 
 printf "[ %s: Running bwa index ]\n" "$(date)"
@@ -23,7 +23,7 @@ bwa mem \
     -p \
     "${nanopore_assembly}" \
     "${pe_reads}" \
-    > "${unsorted_bam}" \
+    > "${unsorted_sam}" \
     2> "${bwa_log}"
 
 printf "[ %s: Running samtools sort ]\n" "$(date)"
@@ -32,10 +32,13 @@ samtools sort \
     -m 7G \
     -l 9 \
     -o "${output_bam}" \
-    "${unsorted_bam}" \
+    "${unsorted_sam}" \
     2> "${samtools_log}"
 
 printf "[ %s: Running samtools index ]\n" "$(date)"
 samtools index "${output_bam}"
+
+printf "[ %s: Removing temporary samfile %s ]\n" "$(date)" "${unsorted_sam}"
+rm "${unsorted_sam}"
 
 exit 0
