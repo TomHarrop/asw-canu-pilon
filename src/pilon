@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -eu
+
+outdir="test/pilon"
+if [[ ! -e "${outdir}" ]]; then
+    mkdir -p "${outdir}"
+fi
+
+max_memory="100G"
+my_pilon="java -Xmx${max_memory} -jar bin/pilon/pilon-1.22.jar"
+
+pilon_log="${outdir}/pilon.log"
+
+printf "[ %s: Running pilon ]\n" "$(date)"
+"${my_pilon}" \
+    --genome "test/tig00000001.fa" \
+    --frags "test/pe_mapped.bam" \
+    --output "tig00000001" \
+    --outdir "${outdir}" \
+    --tracks \
+    --dumpreads \
+    --threads 20 \
+    &> "${pilon_log}"
