@@ -7,7 +7,7 @@ if [[ ! -e "${outdir}" ]]; then
     mkdir -p "${outdir}"
 fi
 
-max_memory="100G"
+max_memory="500G"
 my_pilon=( java -Xmx${max_memory} -jar bin/pilon/pilon-1.22.jar )
 
 pilon_log="${outdir}/pilon.log"
@@ -20,5 +20,4 @@ printf "[ %s: Running pilon ]\n" "$(date)"
     --outdir "${outdir}" \
     --tracks \
     --dumpreads \
-    --threads 20 \
     &> "${pilon_log}"
