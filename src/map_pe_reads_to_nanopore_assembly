@@ -25,9 +25,10 @@ bwa mem \
     2> "${bwa_log}" \
     | samtools sort \
         -@ 20 \
-        -m 200G \
+        -m 10G \
         -l 9 \
         -o "${output_bam}" \
+        - \
         2> "${samtools_log}"
 
 printf "[ %s: Running samtools index ]\n" "$(date)"
