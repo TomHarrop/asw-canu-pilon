@@ -36,8 +36,7 @@ fi
 # output coverage on filtered alignments
 samtools view -F 2308 "${MAPPING}" \
     | bin/bbmap/pileup.sh \
-    "in=stdin.sam" \
-    "ref=${FASTA}" \
+    in=stdin.sam \
     secondary=f \
     "hist=${outdir}/hist.txt" \
     "basecov=${outdir}/basecov.txt" \
