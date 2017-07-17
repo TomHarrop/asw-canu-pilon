@@ -3,7 +3,7 @@
 set -eu
 
 MAPPING="test/pe_mapped.bam"
-FASTA="test/tig00000001.fa"
+FASTA="test/tig00000001_renamed.fa"
 
 outdir="test/stats"
 if [[ ! -e "${outdir}" ]]; then
