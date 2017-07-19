@@ -37,7 +37,7 @@ samtools view -F 2308 ${MAPPING} \
     in=stdin.fastq \
     repair=t \
     allowidenticalnames=t \
-    out=stdout.fastq
+    out=stdout.fastq \
     "outs=${singletons}" \
     | bin/bbmap/reformat.sh \
     in=stdin.fastq \
