@@ -35,7 +35,6 @@ samtools view -F 2308 ${MAPPING} \
     in=stdin.fastq \
     repair=t \
     "out=${outdir}/mapped_reads.fastq.gz" \
-    outs=/dev/null \
     zl=9
 
 # output coverage on filtered alignments
