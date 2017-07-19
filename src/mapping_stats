@@ -13,6 +13,7 @@ fi
 samtools view -F 2308 ${MAPPING} \
     | bin/bbmap/reformat.sh \
     in=stdin.sam \
+    interleaved=t \
     "out=${outdir}/mapped_reads.fastq.gz" \
     zl=9 \
     mappedonly=t \
