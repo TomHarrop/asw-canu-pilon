@@ -13,13 +13,11 @@ fi
 samtools view -F 2308 ${MAPPING} \
     | bin/bbmap/reformat.sh \
     in=stdin.sam \
-    interleaved=t \
     "out=${outdir}/mapped_reads.fastq.gz" \
     zl=9 \
     mappedonly=t \
     primaryonly=t \
     pairedonly=t \
-    addcolon=t \
     "bhist=${outdir}/bhist_mapped.txt" \
     "qhist=${outdir}/qhist_mapped.txt" \
     "qchist=${outdir}/qchist_mapped.txt" \
