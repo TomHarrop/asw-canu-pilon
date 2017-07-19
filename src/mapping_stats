@@ -17,6 +17,7 @@ samtools view -F 2308 ${MAPPING} \
     zl=9 \
     mappedonly=t \
     primaryonly=t \
+    pairedonly=t \
     addcolon=t \
     "bhist=${outdir}/bhist_mapped.txt" \
     "qhist=${outdir}/qhist_mapped.txt" \
