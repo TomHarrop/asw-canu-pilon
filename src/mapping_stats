@@ -34,6 +34,7 @@ samtools view -F 2308 ${MAPPING} \
     | bin/bbmap/repair.sh \
     in=stdin.fastq \
     repair=t \
+    allowidenticalnames=t \
     "out=${outdir}/mapped_reads.fastq.gz" \
     zl=9
 
