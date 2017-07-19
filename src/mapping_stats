@@ -31,14 +31,12 @@ samtools view -F 2308 ${MAPPING} \
     "mhist=${outdir}/mhist_mapped.txt" \
     "idhist=${outdir}/idhist_mapped.txt" \
     idbins=auto \
-    | bin/bbmap/reformat.sh \
+    | bin/bbmap/repair.sh \
     in=stdin.fastq \
-    interleaved=t \
+    repair=t \
     "out=${outdir}/mapped_reads.fastq.gz" \
-    zl=9 \
-    addcolon=t
-
-
+    outs=/dev/null \
+    zl=9
 
 # output coverage on filtered alignments
 # samtools view -h -F 2308 "${MAPPING}" \
