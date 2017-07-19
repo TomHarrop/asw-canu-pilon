@@ -17,6 +17,7 @@ samtools view -F 2308 ${MAPPING} \
     zl=9 \
     mappedonly=t \
     primaryonly=t \
+    addcolon=t \
     "bhist=${outdir}/bhist_mapped.txt" \
     "qhist=${outdir}/qhist_mapped.txt" \
     "qchist=${outdir}/qchist_mapped.txt" \
@@ -33,10 +34,10 @@ samtools view -F 2308 ${MAPPING} \
     idbins=auto
 
 # output coverage on filtered alignments
-samtools view -h -F 2308 "${MAPPING}" \
-    | bin/bbmap/pileup.sh \
-    in=stdin.sam \
-    secondary=f \
-    "hist=${outdir}/hist.txt" \
-    "basecov=${outdir}/basecov.txt" \
-    "bincov=${outdir}/bincov.txt" 
+# samtools view -h -F 2308 "${MAPPING}" \
+#     | bin/bbmap/pileup.sh \
+#     in=stdin.sam \
+#     secondary=f \
+#     "hist=${outdir}/hist.txt" \
+#     "basecov=${outdir}/basecov.txt" \
+#     "bincov=${outdir}/bincov.txt" 
