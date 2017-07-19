@@ -13,8 +13,7 @@ fi
 samtools view -F 2308 ${MAPPING} \
     | bin/bbmap/reformat.sh \
     in=stdin.sam \
-    "out=${outdir}/mapped_reads.fastq.gz" \
-    zl=9 \
+    out=stdout.fastq \
     mappedonly=t \
     primaryonly=t \
     pairedonly=t \
@@ -31,7 +30,15 @@ samtools view -F 2308 ${MAPPING} \
     "indelhist=${outdir}/indelhist_mapped.txt" \
     "mhist=${outdir}/mhist_mapped.txt" \
     "idhist=${outdir}/idhist_mapped.txt" \
-    idbins=auto
+    idbins=auto \
+    | bin/bbmap/reformat.sh \
+    in=stdin.fastq \
+    interleaved=t \
+    "out=${outdir}/mapped_reads.fastq.gz" \
+    zl=9 \
+    addcolon=t
+
+
 
 # output coverage on filtered alignments
 # samtools view -h -F 2308 "${MAPPING}" \
