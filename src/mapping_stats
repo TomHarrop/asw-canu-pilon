@@ -9,6 +9,8 @@ if [[ ! -e "${outdir}" ]]; then
     mkdir -p "${outdir}"
 fi
 
+singletons="${outdir}/singletons.fastq"
+
 # mapped SAM statistics (and mapped raw reads)
 samtools view -F 2308 ${MAPPING} \
     | bin/bbmap/reformat.sh \
@@ -35,8 +37,14 @@ samtools view -F 2308 ${MAPPING} \
     in=stdin.fastq \
     repair=t \
     allowidenticalnames=t \
+    out=stdout.fastq
+    "outs=${singletons}" \
+    | bin/bbmap/reformat.sh \
+    in=stdin.fastq \
+    interleaved=t \
     "out=${outdir}/mapped_reads.fastq.gz" \
-    zl=9
+    zl=9 \
+    addcolon=t
 
 # output coverage on filtered alignments
 # samtools view -h -F 2308 "${MAPPING}" \
