@@ -44,7 +44,9 @@ samtools view -F 2308 ${MAPPING} \
     interleaved=t \
     "out=${outdir}/mapped_reads.fastq.gz" \
     zl=9 \
-    addcolon=t
+    addslash=t
+
+rm "${singletons}"
 
 # output coverage on filtered alignments
 # samtools view -h -F 2308 "${MAPPING}" \
