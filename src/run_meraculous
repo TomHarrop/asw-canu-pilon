@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+set -eu
+
+printf "[ %s: Run assembly with meraculous ]\n" \
+    "$(date)"
+
+# meraculous script
+meraculous="bin/meraculous/run_meraculous.sh"
+
+# make outdir
+outdir="test/meraculous"
+printf "outdir:\t%s\n" "${outdir}"
+if [[ ! -d "${outdir}" ]]; then
+    mkdir -p "${outdir}"
+fi
+
+read_file="$(readlink -f test/stats/mapped_reads.fastq.gz)"
+meraculous_kmer_length=41
+meraculous_conf="${outdir}/meraculous.params"
+
+# configure meraculous
+cat <<- _EOF_ > "${meraculous_conf}"
+lib_seq             ${read_file} MTREADS 400  50  100 0 0 1 1 1 0 0 
+genome_size         0.000036
+mer_size            ${meraculous_kmer_length}
+diploid_mode        0
+num_prefix_blocks   1
+min_depth_cutoff    0
+local_num_procs     50
+local_max_memory    10
+use_cluster         0
+no_read_validation  0
+_EOF_
+
+# build command
+cmd=( "${meraculous}" -c "${meraculous_conf}"
+          -dir "${outdir}"
+          -cleanup_level 2 )
+shopt -s extglob
+printf "Final command line: "
+printf "%s " "${cmd[@]//+([[:blank:]])/ }"
+printf "\n"
+shopt -u extglob
+
+# run meraculous
+log_file="${outdir}/meraculous.log"
+
+printf "[ %s: Running meraculous ]\n" "$(date)"
+
+"${cmd[@]}" 2> "${log_file}"
+
+printf "[ %s: Done ]\n" "$(date)"
+
+exit 0
+
