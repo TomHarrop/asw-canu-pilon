@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+set -eu
+
+printf "[ %s: Normalise kmer coverage with bbnorm ]\n" \
+    "$(date)"
+
+# files
+input_fq="test/stats/mapped_reads.fastq.gz"
+
+# make outdir
+outdir="test/stats"
+if [[ ! -d "${outdir}" ]]; then
+    mkdir -p "${outdir}"
+fi
+
+cmd=( bin/bbtools/bbnorm.sh
+        "in=${input_fq}"
+        "out=${output_fq}"
+        ziplevel=9
+        target=60 min=8 prefilter ecc
+        "khist=${outdir}/hist_before.txt"
+        "khistout=${outdir}/hist_after.txt"
+        "peaks=${outdir}/peaks.txt" )
+
+shopt -s extglob
+printf "Final command line: "
+printf "%s " "${cmd[@]//+([[:blank:]])/ }"
+printf "\n"
+shopt -u extglob
+
+# run bbnorm
+log_file="${outdir}/bbnorm.log"
+"${cmd[@]}" 2> "${log_file}" &
+
+printf "[ %s: Waiting for bbnorm to finish ]\n" "$(date)"
+FAIL=0
+fail_wait
+
+# log metadata
+metadata_file="${outdir}/METADATA.csv"
+printf "[ %s: Logging metadata ]\n" "$(date)"
+printf "metadata_file: %s\n" "${metadata_file}"
+cat <<- _EOF_ > "${metadata_file}"
+    Script,${0}
+    branch,$(git rev-parse --abbrev-ref HEAD)
+    hash,$(git rev-parse HEAD)
+    date,$(date +%F)
+    bbnorm revision,$(bin/bbtools/bbnorm.sh 2>&1 | sed '3q;d')
+_EOF_
+
+printf "[ %s: Done ]\n" "$(date)"
+exit 0
