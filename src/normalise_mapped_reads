@@ -20,7 +20,7 @@ cmd=( bin/bbmap/bbnorm.sh
         "in=${input_fq}"
         "out=${output_fq}"
         ziplevel=9
-        target=60 min=30 prefilter ecc
+        target=60 min=30 prefilter ecc k=41
         "khist=${outdir}/hist_before.txt"
         "khistout=${outdir}/hist_after.txt"
         "peaks=${outdir}/peaks.txt" )
