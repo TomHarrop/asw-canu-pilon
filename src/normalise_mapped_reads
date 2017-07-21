@@ -5,49 +5,35 @@ set -eu
 printf "[ %s: Normalise kmer coverage with bbnorm ]\n" \
     "$(date)"
 
-# files
-input_fq="test/stats/mapped_reads.fastq.gz"
-
 # make outdir
-outdir="test/stats"
+outdir="test/bbnorm"
 if [[ ! -d "${outdir}" ]]; then
     mkdir -p "${outdir}"
 fi
+
+# files
+input_fq="test/stats/mapped_reads.fastq.gz"
+output_fq="${outdir}/normalised_reads.fastq.gz"
+log_file="${outdir}/bbnorm.log"
 
 cmd=( bin/bbtools/bbnorm.sh
         "in=${input_fq}"
         "out=${output_fq}"
         ziplevel=9
-        target=60 min=8 prefilter ecc
+        target=60 min=30 prefilter ecc
         "khist=${outdir}/hist_before.txt"
         "khistout=${outdir}/hist_after.txt"
         "peaks=${outdir}/peaks.txt" )
 
+# run bbnorm
+printf "[ %s: Running bbnorm ]\n" "$(date)"
 shopt -s extglob
-printf "Final command line: "
+printf "Final command line:\n"
 printf "%s " "${cmd[@]//+([[:blank:]])/ }"
 printf "\n"
 shopt -u extglob
 
-# run bbnorm
-log_file="${outdir}/bbnorm.log"
-"${cmd[@]}" 2> "${log_file}" &
-
-printf "[ %s: Waiting for bbnorm to finish ]\n" "$(date)"
-FAIL=0
-fail_wait
-
-# log metadata
-metadata_file="${outdir}/METADATA.csv"
-printf "[ %s: Logging metadata ]\n" "$(date)"
-printf "metadata_file: %s\n" "${metadata_file}"
-cat <<- _EOF_ > "${metadata_file}"
-    Script,${0}
-    branch,$(git rev-parse --abbrev-ref HEAD)
-    hash,$(git rev-parse HEAD)
-    date,$(date +%F)
-    bbnorm revision,$(bin/bbtools/bbnorm.sh 2>&1 | sed '3q;d')
-_EOF_
+"${cmd[@]}" 2> "${log_file}"
 
 printf "[ %s: Done ]\n" "$(date)"
 exit 0
