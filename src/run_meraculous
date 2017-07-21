@@ -15,7 +15,7 @@ if [[ ! -d "${outdir}" ]]; then
     mkdir -p "${outdir}"
 fi
 
-read_file="$(readlink -f test/stats/mapped_reads.fastq.gz)"
+read_file="$(readlink -f test/bbnorm/normalised_reads.fastq.gz)"
 meraculous_kmer_length=41
 meraculous_conf="${outdir}/meraculous.params"
 
@@ -30,7 +30,7 @@ min_depth_cutoff    0
 local_num_procs     50
 local_max_memory    10
 use_cluster         0
-no_read_validation  1
+no_read_validation  0
 _EOF_
 
 # build command
