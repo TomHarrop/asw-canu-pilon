@@ -24,6 +24,7 @@ cat <<- _EOF_ > "${meraculous_conf}"
 lib_seq             ${read_file} MTREADS 400  50  100 0 0 1 1 1 0 0 
 genome_size         0.000036
 mer_size            ${meraculous_kmer_length}
+min_depth_cutoff    55
 diploid_mode        0
 num_prefix_blocks   1
 min_depth_cutoff    0
