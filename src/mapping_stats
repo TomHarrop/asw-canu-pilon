@@ -44,7 +44,8 @@ samtools view -F 2308 ${MAPPING} \
     interleaved=t \
     "out=${outdir}/mapped_reads.fastq.gz" \
     zl=9 \
-    addslash=t
+    addslash=t \
+    spaceslash=f
 
 rm "${singletons}"
 
