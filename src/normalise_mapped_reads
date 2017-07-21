@@ -16,7 +16,7 @@ input_fq="test/stats/mapped_reads.fastq.gz"
 output_fq="${outdir}/normalised_reads.fastq.gz"
 log_file="${outdir}/bbnorm.log"
 
-cmd=( bin/bbtools/bbnorm.sh
+cmd=( bin/bbmap/bbnorm.sh
         "in=${input_fq}"
         "out=${output_fq}"
         ziplevel=9
