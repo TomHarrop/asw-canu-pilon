@@ -2,9 +2,10 @@
 
 set -eu
 
-MAPPING="test/pe_mapped.bam"
+samtools=bin/samtools/samtools
+MAPPING="output/mt_contig/mapping/pe_mapped.bam"
 
-outdir="test/stats"
+outdir="output/mt_contig/mapping"
 if [[ ! -e "${outdir}" ]]; then
     mkdir -p "${outdir}"
 fi
@@ -12,7 +13,7 @@ fi
 singletons="${outdir}/singletons.fastq"
 
 # mapped SAM statistics (and mapped raw reads)
-samtools view -F 2308 ${MAPPING} \
+"${samtools}" view -F 2308 ${MAPPING} \
     | bin/bbmap/reformat.sh \
     in=stdin.sam \
     out=stdout.fastq \
@@ -50,10 +51,10 @@ samtools view -F 2308 ${MAPPING} \
 rm "${singletons}"
 
 # output coverage on filtered alignments
-# samtools view -h -F 2308 "${MAPPING}" \
-#     | bin/bbmap/pileup.sh \
-#     in=stdin.sam \
-#     secondary=f \
-#     "hist=${outdir}/hist.txt" \
-#     "basecov=${outdir}/basecov.txt" \
-#     "bincov=${outdir}/bincov.txt" 
+"${samtools}" view -h -F 2308 "${MAPPING}" \
+    | bin/bbmap/pileup.sh \
+    in=stdin.sam \
+    secondary=f \
+    "hist=${outdir}/hist.txt" \
+    "basecov=${outdir}/basecov.txt" \
+    "bincov=${outdir}/bincov.txt" 

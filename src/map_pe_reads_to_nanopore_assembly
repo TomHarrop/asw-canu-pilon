@@ -2,24 +2,26 @@
 
 set -eu
 
-outdir="test"
+outdir="output/mt_contig/mapping"
 if [[ ! -e "${outdir}" ]]; then
     mkdir -p "${outdir}"
 fi
 
-nanopore_assembly="test/tig00000001.fa"
+samtools=bin/samtools/samtools
+
+nanopore_assembly="output/mt_contig/asw_mt_nanopore.fasta"
 pe_reads="data/pe_merged.fastq.gz"
 bwa_log="${outdir}/bwamem.log"
 samtools_log="${outdir}/samtools.log"
-unsorted_sam="test/pe_mapped_unsorted.sam"
-output_bam="test/pe_mapped.bam"
+unsorted_sam="${outdir}/pe_mapped_unsorted.sam"
+output_bam="${outdir}/pe_mapped.bam"
 
 printf "[ %s: Running bwa index ]\n" "$(date)"
 bwa index "${nanopore_assembly}"
 
 printf "[ %s: Running bwa mem ]\n" "$(date)"
 bwa mem \
-    -t 7 \
+    -t 100 \
     -p \
     "${nanopore_assembly}" \
     "${pe_reads}" \
@@ -27,8 +29,8 @@ bwa mem \
     2> "${bwa_log}"
 
 printf "[ %s: Running samtools sort ]\n" "$(date)"
-samtools sort \
-    -@ 7 \
+"${samtools}" sort \
+    -@ 100 \
     -m 7G \
     -l 9 \
     -o "${output_bam}" \
@@ -36,7 +38,7 @@ samtools sort \
     2> "${samtools_log}"
 
 printf "[ %s: Running samtools index ]\n" "$(date)"
-samtools index "${output_bam}"
+"${samtools}" index "${output_bam}"
 
 printf "[ %s: Removing temporary samfile %s ]\n" "$(date)" "${unsorted_sam}"
 rm "${unsorted_sam}"

@@ -6,21 +6,21 @@ printf "[ %s: Normalise kmer coverage with bbnorm ]\n" \
     "$(date)"
 
 # make outdir
-outdir="test/bbnorm"
+outdir="output/mt_contig/bbnorm"
 if [[ ! -d "${outdir}" ]]; then
     mkdir -p "${outdir}"
 fi
 
 # files
-input_fq="test/stats/mapped_reads.fastq.gz"
+input_fq="output/mt_contig/mapping/mapped_reads.fastq.gz"
 output_fq="${outdir}/normalised_reads.fastq.gz"
 log_file="${outdir}/bbnorm.log"
 
 cmd=( bin/bbmap/bbnorm.sh
         "in=${input_fq}"
         "out=${output_fq}"
-        ziplevel=9
-        target=100 min=30 prefilter ecc k=31
+        "ziplevel=9"
+        "target=150" "min=50" prefilter ecc "k=31"
         "khist=${outdir}/hist_before.txt"
         "khistout=${outdir}/hist_after.txt"
         "peaks=${outdir}/peaks.txt" )

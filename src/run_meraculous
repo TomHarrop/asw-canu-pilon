@@ -9,20 +9,20 @@ printf "[ %s: Run assembly with meraculous ]\n" \
 meraculous="bin/meraculous/run_meraculous.sh"
 
 # make outdir
-outdir="test/meraculous"
+outdir="output/mt_contig/meraculous"
 printf "outdir:\t%s\n" "${outdir}"
 if [[ ! -d "${outdir}" ]]; then
     mkdir -p "${outdir}"
 fi
 
-read_file="$(readlink -f test/bbnorm/normalised_reads.fastq.gz)"
+reads="$(readlink -f output/mt_contig/bbnorm/normalised_reads.fastq.gz)"
 meraculous_kmer_length=41
 meraculous_conf="${outdir}/meraculous.params"
 
 # configure meraculous
 cat <<- _EOF_ > "${meraculous_conf}"
-lib_seq             ${read_file} MTREADS 400  50  100 0 0 1 1 1 0 0 
-genome_size         0.000036
+lib_seq             ${reads} MTREADS 400  50  100 0 0 1 1 1 0 0 
+genome_size         0.00002
 mer_size            ${meraculous_kmer_length}
 diploid_mode        0
 num_prefix_blocks   1
@@ -49,6 +49,19 @@ log_file="${outdir}/meraculous.log"
 printf "[ %s: Running meraculous ]\n" "$(date)"
 
 "${cmd[@]}" 2> "${log_file}"
+
+# evaluate run
+printf "[ %s: Evaluating meraculous results ]\n" "$(date)"
+cmd=( bin/meraculous/evaluate_meraculous_run.sh
+      "${outdir}"
+      "${outdir}/meraculous_evaluate_run" )
+shopt -s extglob
+printf "Command line:\n"
+printf "%s " "${cmd[@]//+([[:blank:]])/ }"
+printf "\n"
+shopt -u extglob
+
+MERACULOUS_ROOT="$(readlink -f bin/meraculous)" "${cmd[@]}"
 
 printf "[ %s: Done ]\n" "$(date)"
 
