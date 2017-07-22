@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -eu
+
+# make outdir
+outdir="output/mt_contig"
+if [[ ! -d "${outdir}" ]]; then
+    mkdir -p "${outdir}"
+fi
+
+bin/bbmap/filterbyname.sh \
+    in="output/canu/asw_raw.contigs.fasta" \
+    include=t \
+    names=tig00000001 \
+    "out=${outdir}/asw_mt_nanopore.fasta"
