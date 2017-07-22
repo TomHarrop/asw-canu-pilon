@@ -30,7 +30,7 @@ bwa mem \
 
 printf "[ %s: Running samtools sort ]\n" "$(date)"
 "${samtools}" sort \
-    -@ 100 \
+    -@ 50 \
     -m 7G \
     -l 9 \
     -o "${output_bam}" \
