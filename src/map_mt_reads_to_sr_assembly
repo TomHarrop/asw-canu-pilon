@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -eu
+
+outdir="output/mt_contig/mt_reads_mapped_to_sr_assembly"
+if [[ ! -e "${outdir}" ]]; then
+    mkdir -p "${outdir}"
+fi
+
+samtools=bin/samtools/samtools
+
+ mer_fasta="output/mt_contig/meraculous/"
+mer_fasta+="meraculous_final_results/final.scaffolds.fa"
+mt_assembly="${outdir}/mt_assembly.fasta"
+pe_reads="output/mt_contig/mapping/mapped_reads.fastq.gz"
+bwa_log="${outdir}/bwamem.log"
+samtools_log="${outdir}/samtools.log"
+unsorted_sam="${outdir}/mt_mapped_unsorted.sam"
+output_bam="${outdir}/mt_mapped.bam"
+
+printf "[ %s: Running bwa index ]\n" "$(date)"
+cp "${mer_fasta}" "${mt_assembly}"
+bwa index "${mt_assembly}"
+
+printf "[ %s: Running bwa mem ]\n" "$(date)"
+bwa mem \
+    -t 100 \
+    -p \
+    "${mt_assembly}" \
+    "${pe_reads}" \
+    > "${unsorted_sam}" \
+    2> "${bwa_log}"
+
+printf "[ %s: Running samtools sort ]\n" "$(date)"
+"${samtools}" sort \
+    -@ 50 \
+    -m 7G \
+    -l 9 \
+    -o "${output_bam}" \
+    "${unsorted_sam}" \
+    2> "${samtools_log}"
+
+printf "[ %s: Running samtools index ]\n" "$(date)"
+"${samtools}" index "${output_bam}"
+
+printf "[ %s: Removing temporary samfile %s ]\n" "$(date)" "${unsorted_sam}"
+rm "${unsorted_sam}"
+
+exit 0
+
