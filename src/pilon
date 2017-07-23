@@ -17,8 +17,8 @@ pilon_log="${outdir}/pilon.log"
 
 printf "[ %s: Running pilon ]\n" "$(date)"
 "${my_pilon[@]}" \
-    --genome "test/tig00000001.fa" \
-    --frags "test/pe_mapped.bam" \
+    --genome "${genome}" \
+    --frags "${frags}" \
     --output "Scaffold2" \
     --outdir "${outdir}" \
     --tracks \
