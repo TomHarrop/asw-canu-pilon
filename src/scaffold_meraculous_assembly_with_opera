@@ -28,15 +28,22 @@ bin/bbmap/reformat.sh \
 # run opera
 printf "[ %s: Running OPERA-LG ]\n" "$(date)"
 opera_log="${outdir}/opera.log"
-bin/opera-lg/OPERA-long-read.pl \
-    --contig-file "${contigs}" \
-    --kmer 41 \
-    --long-read-file "${long_reads}" \
-    --output-prefix "asw_mtdna" \
-    --output-directory "${outdir}" \
-    --num-of-processors 50 \
-#    --samtools-dir "${samtools_dir}" \
-    --opera "${opera_dir}" \
-    --illumina-read1 "${sr1}" \
-    --illumina-read2 "${sr2}" \
-    2> "${opera_log}"
+# --samtools-dir "${samtools_dir}"
+cmd=( bin/opera-lg/OPERA-long-read.pl
+          --contig-file "${contigs}"
+          --kmer 41 
+          --long-read-file "${long_reads}"
+          --output-prefix "asw_mtdna"
+          --output-directory "${outdir}"
+          --num-of-processors 50
+          --opera "${opera_dir}"
+          --illumina-read1 "${sr1}"
+          --illumina-read2 "${sr2}" )
+
+shopt -s extglob
+printf "Final command line:\n"
+printf "%s " "${cmd[@]//+([[:blank:]])/ }"
+printf "\n"
+shopt -u extglob
+
+"${cmd[@]}" &> "${opera_log}"
