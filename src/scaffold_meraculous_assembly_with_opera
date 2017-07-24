@@ -4,8 +4,7 @@ set -eu
 
 # function for printing command line and running command
 run_cmd () {
-    local -n _cmd
-    _cmd=$1
+    local _cmd=$1
     local _log_file="${2}"
 
     shopt -s extglob
