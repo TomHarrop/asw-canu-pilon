@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -eu
+
+outdir="output/mt_contig/opera"
+if [[ ! -e "${outdir}" ]]; then
+    mkdir -p "${outdir}"
+fi
+
+# files
+contigs="output/mt_contig/pilon/Scaffold2.fasta"
+long_reads="data/asw12_20170627_merged.fq.gz"
+samtools_dir="bin/samtools"
+opera_dir="bin/opera-lg"
+short_reads="output/mt_contig/mapping/mapped_reads.fastq.gz"
+sr1="${outdir}/r1.fasta"
+sr2="${outdir}/r2.fasta"
+
+# deinterleave R1 and R2
+printf "[ %s: Demuxing reads ]\n" "$(date)"
+bin/bbmap/reformat.sh \
+    "in=${short_reads}" \
+    "out=${sr1}" \
+    "out2=${sr2}"
+
+# run opera
+printf "[ %s: Running OPERA-LG ]\n" "$(date)"
+bin/opera-lg/OPERA-long-read.pl \
+    --contig-file "${contigs}" \
+    --kmer 41 \
+    --long-read-file "${long_reads}" \
+    --output-prefix "asw_mtdna" \
+    --output-directory "${outdir}" \
+    --num-of-processors 50 \
+    --samtools-dir "${samtools_dir}" \
+    --opera "${opera_dir}" \
+    --illumina-read1 "${sr1}" \
+    --illumina-read2 "${sr2}"
