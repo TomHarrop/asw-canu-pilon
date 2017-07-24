@@ -2,33 +2,47 @@
 
 set -eu
 
+# function for printing command line and running command
+run_cmd () {
+    local _cmd=( ${0[@]} )
+    local _log_file="${1}"
+
+    shopt -s extglob
+    printf "Running command:\n"
+    printf "%s " "${_cmd[@]//+([[:blank:]])/ }"
+    printf "\n"
+    shopt -u extglob
+
+    "${_cmd[@]}" &> "${_log_file}"
+}
+
 outdir="output/mt_contig/opera"
 if [[ ! -e "${outdir}" ]]; then
     mkdir -p "${outdir}"
 fi
 
 # files
-contigs="$(readlink -f output/mt_contig/pilon/Scaffold2.fasta)"
-long_reads="$(readlink -f data/asw12_20170627_merged.fq.gz)"
-samtools_dir="$(readlink -f bin/samtools)"
-opera_dir="$(readlink -f bin/opera-lg)"
-short_reads="$(readlink -f output/mt_contig/mapping/mapped_reads.fastq.gz)"
-sr1="$(readlink -f ${outdir}/r1.fasta)"
-sr2="$(readlink -f ${outdir}/r2.fasta)"
+contigs="output/mt_contig/pilon/Scaffold2.fasta"
+my_contigs="${outdir}/contigs.fasta"
+long_reads="data/asw12_20170627_merged.fq.gz"
+samtools_dir="bin/samtools"
+opera_dir="bin/opera-lg"
+short_reads="output/mt_contig/mapping/mapped_reads.fastq.gz"
+sr1="${outdir}/r1.fasta"
+sr2="${outdir}/r2.fasta"
 
-# deinterleave R1 and R2
-printf "[ %s: Demuxing reads ]\n" "$(date)"
-bbmap_log="${outdir}/bbmap.log"
-bin/bbmap/reformat.sh \
-    "in=${short_reads}" \
-    "out=${sr1}" \
-    "out2=${sr2}" \
-    2> "${bbmap_log}"
+# OPERA-long reads steps
+# 1. make bwa index
+cp "${contigs}" "${my_contigs}"
+cmd=( bwa index "${my_contigs}" )
+run_cmd "${cmd[@]}" "${outdir}/bwa_index.log"
 
-# run opera
+exit 1
+
+# run opera ... this needs to be done manually because the OPERA script is
+# broken
 printf "[ %s: Running OPERA-LG ]\n" "$(date)"
 opera_log="${outdir}/opera.log"
-# --samtools-dir "${samtools_dir}"
 cmd=( bin/opera-lg/OPERA-long-read.pl
           --contig-file "${contigs}"
           --kmer 41 
@@ -40,10 +54,3 @@ cmd=( bin/opera-lg/OPERA-long-read.pl
           --illumina-read1 "${sr1}"
           --illumina-read2 "${sr2}" )
 
-shopt -s extglob
-printf "Final command line:\n"
-printf "%s " "${cmd[@]//+([[:blank:]])/ }"
-printf "\n"
-shopt -u extglob
-
-"${cmd[@]}" &> "${opera_log}"
