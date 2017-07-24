@@ -35,7 +35,7 @@ bin/opera-lg/OPERA-long-read.pl \
     --output-prefix "asw_mtdna" \
     --output-directory "${outdir}" \
     --num-of-processors 50 \
-    --samtools-dir "${samtools_dir}" \
+#    --samtools-dir "${samtools_dir}" \
     --opera "${opera_dir}" \
     --illumina-read1 "${sr1}" \
     --illumina-read2 "${sr2}" \
