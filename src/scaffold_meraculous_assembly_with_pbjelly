@@ -18,6 +18,7 @@ long_reads="data/asw12_20170627_merged.fq.gz"
 pbjelly_lr="${outdir}/long_reads.fastq"
 
 # PBJelly config
+# SOME PROBLEM PASSING THE OUTPUT DIR TO SETUP
 jelly_protocol="${outdir}/jelly_protocol.xml"
 cat <<- _EOF_ > "${jelly_protocol}"
 <jellyProtocol>
