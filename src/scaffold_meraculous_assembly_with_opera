@@ -8,16 +8,65 @@ if [[ ! -e "${outdir}" ]]; then
 fi
 
 # files
-contigs="output/mt_contig/pilon/Scaffold2.fasta"
-my_contigs="${outdir}/contigs.fasta"
-long_reads="data/asw12_20170627_merged.fq.gz"
-samtools_dir="bin/samtools"
-opera_dir="bin/opera-lg"
-short_reads="output/mt_contig/mapping/mapped_reads.fastq.gz"
-sr1="${outdir}/r1.fasta"
-sr2="${outdir}/r2.fasta"
+contigs="$(readlink -f output/mt_contig/pilon/Scaffold2.fasta)"
+my_contigs="$(readlink -f ${outdir}/contigs.fasta)"
+long_reads="$(readlink -f data/asw12_20170627_merged.fq.gz)"
+samtools_dir="$(readlink -f bin/samtools)"
+opera_dir="$(readlink -f bin/opera-lg)"
+short_reads="$(readlink -f output/mt_contig/mapping/mapped_reads.fastq.gz)"
+sr1="$(readlink -f ${outdir}/r1.fasta)"
+sr2="$(readlink -f ${outdir}/r2.fasta)"
 
-# OPERA-long reads steps
+# demux reads
+cmd=( bin/bbmap/reformat.sh
+          "in=${short_reads}"
+          "out=${sr1}"
+          "out2=${sr2}" )
+cmd_log="${outdir}/reformat.log"
+
+shopt -s extglob
+printf "Running command:\n"
+printf "%s " "${cmd[@]//+([[:blank:]])/ }"
+printf "\n"
+shopt -u extglob
+
+"${cmd[@]}" &> "${cmd_log}"
+
+
+# README
+# This doesn't work because the OPERA-long-read script is broken. So far, I've
+# found the following problems:
+# It uses old samtools options. Workaround: use samtools 0.1.19-44428cd
+
+# BLASR doesn't work.
+printf "[ %s: Running OPERA-LG ]\n" "$(date)"
+cmd_log="${outdir}/opera.log"
+cmd=( bin/opera-lg/OPERA-long-read.pl
+          --contig-file "${contigs}"
+          --kmer 41 
+          --long-read-file "${long_reads}"
+          --output-prefix "asw_mtdna"
+          --output-directory "${outdir}"
+          --num-of-processors 50
+          --opera "${opera_dir}"
+          --illumina-read1 "${sr1}"
+          --illumina-read2 "${sr2}" )
+
+shopt -s extglob
+printf "Running command:\n"
+printf "%s " "${cmd[@]//+([[:blank:]])/ }"
+printf "\n"
+shopt -u extglob
+
+"${cmd[@]}" &> "${cmd_log}"
+
+
+exit 1
+
+##########################
+# OPERA-long reads steps #
+##########################
+
 # 1. make bwa index
 bwa_log="${outdir}/bwa_index.log"
 cp "${contigs}" "${my_contigs}"
@@ -31,20 +80,5 @@ shopt -u extglob
 
 "${cmd[@]}" &> "${bwa_log}"
 
-exit 1
-
-# run opera ... this needs to be done manually because the OPERA script is
-# broken
-printf "[ %s: Running OPERA-LG ]\n" "$(date)"
-opera_log="${outdir}/opera.log"
-cmd=( bin/opera-lg/OPERA-long-read.pl
-          --contig-file "${contigs}"
-          --kmer 41 
-          --long-read-file "${long_reads}"
-          --output-prefix "asw_mtdna"
-          --output-directory "${outdir}"
-          --num-of-processors 50
-          --opera "${opera_dir}"
-          --illumina-read1 "${sr1}"
-          --illumina-read2 "${sr2}" )
+# 2. 
 
