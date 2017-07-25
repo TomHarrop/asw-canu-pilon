@@ -110,7 +110,7 @@ printf "%s " "${cmd3[@]//+([[:blank:]])/ }"
 printf "\n"
 shopt -u extglob
 
-"${cmd[@]}" 2> "${cmd_log}" | "${cmd2[@]}" | "${cmd3[@]}" \
+"${cmd[@]}" 2> "${cmd_log}" | cut -d ' ' -f1-5,7-12 | sed 's/ /\t/g' \
     > "${outdir}/${prefix}.map"
 }
 
