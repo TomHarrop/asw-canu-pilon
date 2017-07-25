@@ -46,7 +46,8 @@ cmd1=( bwa mem -t 50 -p
 cmd1_log="${outdir}/bwa_mem.log"
 
 cmd2=( "${samtools}" sort -@ 50 -l 9 -m 5G
-           -o "${outdir}/${prefix}.bam")
+           -o "${outdir}/${prefix}.bam"
+           --reference "${my_contigs}" )
 cmd2_log="${outdir}/samtools_sort.log"
 
 shopt -s extglob
@@ -57,7 +58,7 @@ printf "%s " "${cmd2[@]//+([[:blank:]])/ }"
 printf "\n"
 shopt -u extglob
 
-"${cmd1[@]}" 2> "${cmd1_log}" | "${cmd1[@]}" 2> "${cmd1_log}"
+"${cmd1[@]}" 2> "${cmd1_log}" | "${cmd2[@]}" 2> "${cmd2_log}"
 
 exit 1
 
