@@ -14,6 +14,7 @@ pbjelly="$(readlink -f bin/pbsuite/bin/Jelly.py)"
 
 # files
 contigs="$(readlink -f output/mt_contig/pilon/Scaffold2.fasta)"
+my_contigs="${outdir}/contigs.fasta"
 long_reads="data/asw12_20170627_merged.fq.gz"
 pbjelly_lr="${outdir}/long_reads.fastq"
 
@@ -22,7 +23,7 @@ pbjelly_lr="${outdir}/long_reads.fastq"
 jelly_protocol="${outdir}/jelly_protocol.xml"
 cat <<- _EOF_ > "${jelly_protocol}"
 <jellyProtocol>
-    <reference>${contigs}</reference>
+    <reference>${my_contigs}</reference>
     <outputDir>${outdir}</outputDir>
     <blasr>-minMatch 8 -minPctIdentity 70 -bestn 1 -nCandidates 20
     -maxScore -500 -nproc 50 -noSplitSubreads</blasr>
@@ -31,6 +32,9 @@ cat <<- _EOF_ > "${jelly_protocol}"
     </input>
 </jellyProtocol>
 _EOF_
+
+# copy contigs
+cp "${contigs}" "${my_contigs}"
 
 # convert reads
 bin/bbmap/reformat.sh "in=${long_reads}" "out=${pbjelly_lr}"
