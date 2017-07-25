@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+set -eu
+
+outdir="$(readlink -f output/mt_contig/npscarf)"
+if [[ ! -e "${outdir}" ]]; then
+    mkdir -p "${outdir}"
+fi
+
+npscarf="$(readlink -f bin/japsa/jsa.np.npscarf)"
+
+# files
+contigs="$(readlink -f output/mt_contig/pilon/Scaffold2.fasta)"
+my_contigs="${outdir}/contigs.fasta"
+long_reads="data/asw12_20170627_merged.fq.gz"
+my_lr="${outdir}/long_reads.fastq"
+
+# copy contigs
+printf "[ %s: Copying contigs to outdir ]\n" "$(date)"
+cp "${contigs}" "${my_contigs}"
+
+# convert reads
+printf "[ %s: Unzipping long reads ]\n" "$(date)"
+bin/bbmap/reformat.sh "in=${long_reads}" "out=${my_lr}"
+
+# index contigs
+printf "[ %s: Indexing contigs ]\n" "$(date)"
+bwa index "${my_contigs}"
+
+# Run mapping
+printf "[ %s: Mapping long reads against contigs ]\n" "$(date)"
+bwa mem -t 50 \
+    -k11 -W20 -r10 -A1 -B1 -O1 -E1 -L0 -a -Y \
+    "${my_contigs}" \
+    "${my_lr}" \
+    > "${outdir}/mapping.sam"
+
+# Run npscarf in a subshell
+printf "[ %s: Running npscarf ]\n" "$(date)"
+(
+    cd "${outdir}" || exit 1
+    "${npscarf}" \
+        -seq "${my_contigs}" \
+        -input "${outdir}/mapping.bam" \
+        -format sam
+    )
