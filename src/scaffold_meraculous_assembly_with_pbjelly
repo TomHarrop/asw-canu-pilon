@@ -37,6 +37,8 @@ bin/bbmap/reformat.sh "in=${long_reads}" "out=${pbjelly_lr}"
 # setup pbjelly
 "${pbjelly}" setup "${jelly_protocol}"
 
+exit 1
+
 # pbjelly steps
 "${pbjelly}" mapping "${jelly_protocol}"
 "${pbjelly}" support "${jelly_protocol}"
