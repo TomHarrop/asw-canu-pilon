@@ -84,15 +84,15 @@ shopt -u extglob
 
 # call BLASR on fasta file
 printf "[ %s: Running BLASR ]\n" "$(date)"
-cmd=( blasr -nproc 50
+cmd=( blasr --nproc 50
           -m 1
-          -minMatch 5
-          -bestn 10
-          -noSplitSubreads
-          -advanceExactMatches 1
-          -nCandidates 1
-          -maxAnchorsPerPosition 1
-          -sdpTupleSize 7
+          --minMatch 5
+          --bestn 10
+          --noSplitSubreads
+          --advanceExactMatches 1
+          --nCandidates 1
+          --maxAnchorsPerPosition 1
+          --sdpTupleSize 7
           "${blasr_lr}"
           "${my_contigs}" )
 cmd_log="${outdir}/blasr.log"
