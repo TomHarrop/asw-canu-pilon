@@ -25,7 +25,7 @@ cat <<- _EOF_ > "${jelly_protocol}"
     <outputDir>${outdir}</outputDir>
     <blasr>-minMatch 8 -minPctIdentity 70 -bestn 1 -nCandidates 20
     -maxScore -500 -nproc 50 -noSplitSubreads</blasr>
-    <input baseDir="$(dirname "${pbjelly_lr}")/">
+    <input baseDir="$(dirname "${pbjelly_lr}")">
         <job>$(basename "${pbjelly_lr}")</job>
     </input>
 </jellyProtocol>
