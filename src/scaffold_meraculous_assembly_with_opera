@@ -33,7 +33,6 @@ shopt -u extglob
 
 "${cmd[@]}" &> "${cmd_log}"
 
-
 # README
 # This doesn't work because the OPERA-long-read script is broken. So far, I've
 # found the following problems:

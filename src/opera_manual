@@ -80,7 +80,7 @@ printf "%s " "${cmd[@]//+([[:blank:]])/ }"
 printf "\n"
 shopt -u extglob
 
-"${cmd[@]}" &> "${cmd_log}"
+# "${cmd[@]}" &> "${cmd_log}"
 
 # call BLASR on fasta file
 printf "[ %s: Running BLASR ]\n" "$(date)"
@@ -110,7 +110,7 @@ printf "%s " "${cmd3[@]//+([[:blank:]])/ }"
 printf "\n"
 shopt -u extglob
 
-"${cmd[@]}" &> "${cmd_log}" | "${cmd2[@]}" | "${cmd3[@]}" > "${prefix}.map"
+"${cmd[@]}" 2> "${cmd_log}" | "${cmd2[@]}" | "${cmd3[@]}" > "${prefix}.map"
 }
 
 # run steps
