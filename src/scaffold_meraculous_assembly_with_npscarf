@@ -10,7 +10,7 @@ fi
 npscarf="$(readlink -f bin/japsa/jsa.np.npscarf)"
 
 # files
-contigs="$(readlink -f /output/mt_contig/meraculous/meraculous_gap_closure/final.contigs.fa)"
+contigs="$(readlink -f output/mt_contig/meraculous/meraculous_gap_closure/final.contigs.fa)"
 my_contigs="${outdir}/contigs.fasta"
 long_reads="data/asw12_20170627_merged.fq.gz"
 my_lr="${outdir}/long_reads.fastq"
