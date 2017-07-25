@@ -2,21 +2,6 @@
 
 set -eu
 
-# function for printing command line and running command
-run_cmd () {
-    local -n _cmd
-    _cmd=$1
-    local _log_file="${2}"
-
-    shopt -s extglob
-    printf "Running command:\n"
-    printf "%s " "${_cmd[@]//+([[:blank:]])/ }"
-    printf "\n"
-    shopt -u extglob
-
-    "${_cmd[@]}" &> "${_log_file}"
-}
-
 outdir="output/mt_contig/opera"
 if [[ ! -e "${outdir}" ]]; then
     mkdir -p "${outdir}"
@@ -34,10 +19,17 @@ sr2="${outdir}/r2.fasta"
 
 # OPERA-long reads steps
 # 1. make bwa index
+bwa_log="${outdir}/bwa_index.log"
 cp "${contigs}" "${my_contigs}"
-declare -a cmd
 cmd=( bwa index "${my_contigs}" )
-run_cmd cmd "${outdir}/bwa_index.log"
+
+shopt -s extglob
+printf "Running command:\n"
+printf "%s " "${cmd[@]//+([[:blank:]])/ }"
+printf "\n"
+shopt -u extglob
+
+"${cmd[@]}" &> "${bwa_log}"
 
 exit 1
 
