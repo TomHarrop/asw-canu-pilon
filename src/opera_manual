@@ -12,6 +12,7 @@ prefix="asw_mtdna"
 contigs="output/mt_contig/pilon/Scaffold2.fasta"
 my_contigs="${outdir}/contigs.fasta"
 long_reads="data/asw12_20170627_merged.fq.gz"
+blasr_lr="${outdir}/long_reads.fasta"
 samtools="bin/samtools/samtools"
 opera_dir="bin/opera-lg"
 short_reads="output/mt_contig/mapping/mapped_reads.fastq.gz"
@@ -66,8 +67,23 @@ shopt -u extglob
 
 # 3. BLASR
 opera_step3() {
-printf "[ %s: Running BLASR ]\n" "$(date)"
+# convert reads to FASTA
+printf "[ %s: Converting long reads to FASTA ]\n" "$(date)"
+cmd=( bin/bbmap/reformat.sh
+          "in=${long_reads}"
+          "out=${blasr_lr}" )
+cmd_log="${outdir}/reformat.log"
 
+shopt -s extglob
+printf "Running command:\n"
+printf "%s " "${cmd[@]//+([[:blank:]])/ }"
+printf "\n"
+shopt -u extglob
+
+"${cmd[@]}" &> "${cmd_log}"
+
+# call BLASR on fasta file
+printf "[ %s: Running BLASR ]\n" "$(date)"
 cmd=( blasr -nproc 50
           -m 1
           -minMatch 5
@@ -77,7 +93,7 @@ cmd=( blasr -nproc 50
           -nCandidates 1
           -maxAnchorsPerPosition 1
           -sdpTupleSize 7
-          "${long_reads}"
+          "${blasr_lr}"
           "${my_contigs}" )
 cmd_log="${outdir}/blasr.log"
 
