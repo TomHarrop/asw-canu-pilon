@@ -97,8 +97,8 @@ cmd=( blasr --nproc 50
           "${my_contigs}" )
 cmd_log="${outdir}/blasr.log"
 
-cmd2=( cut -d ' ' -f1-5,7-12 )
-cmd3=( sed 's/ /\t/g' )
+cmd2=( cut -d "' '" -f1-5,7-12 )
+cmd3=( sed "'s/ /\t/g'" )
 
 shopt -s extglob
 printf "Piping commands:\n"
@@ -110,7 +110,8 @@ printf "%s " "${cmd3[@]//+([[:blank:]])/ }"
 printf "\n"
 shopt -u extglob
 
-"${cmd[@]}" 2> "${cmd_log}" | "${cmd2[@]}" | "${cmd3[@]}" > "${prefix}.map"
+"${cmd[@]}" 2> "${cmd_log}" | "${cmd2[@]}" | "${cmd3[@]}" \
+    > "${outdir}/${prefix}.map"
 }
 
 # run steps
