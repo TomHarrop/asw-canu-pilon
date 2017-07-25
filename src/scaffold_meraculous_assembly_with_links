@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+set -eu
+
+outdir="output/mt_contig/links"
+if [[ ! -e "${outdir}" ]]; then
+    mkdir -p "${outdir}"
+fi
+
+links="$(readlink -f bin/links/LINKS)"
+
+long_reads="data/asw12_20170627_merged.fq.gz"
+long_read_path="$(readlink -f "${long_reads}")"
+
+contigs="output/mt_contig/pilon/Scaffold2.fasta"
+contigs_path="$(readlink -f "${contigs}")"
+
+# long read file-of-filenames, ok then...?
+fof="$(mktemp --suffix=.txt)"
+cat <<- _EOF_ > "${fof}"
+${long_read_path}
+_EOF_
+
+cmd=( "${links}"
+          -f "${contigs_path}"
+          -s "${fof}"
+          -d "500,1000,2000,3000,4000,5000"
+          -b "asw_mtdna" )
+cmd_log="$(readlink -f "${outdir}/links.log")"
+
+shopt -s extglob
+printf "Running command:\n"
+printf "%s " "${cmd[@]//+([[:blank:]])/ }"
+printf "\n"
+shopt -u extglob
+
+# run LINKS in subshell
+(
+    cd "${outdir}" || exit 1
+    "${cmd[@]}" &> "${cmd_log}"
+)
+
+exit 0
+
