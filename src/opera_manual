@@ -97,8 +97,8 @@ cmd=( blasr --nproc 50
           "${my_contigs}" )
 cmd_log="${outdir}/blasr.log"
 
-cmd2=( cut -d "' '" -f1-5,7-12 )
-cmd3=( sed "'s/ /\t/g'" )
+cmd2=( cut -d \' \' -f1-5,7-12 )
+cmd3=( sed \'s/ /\t/g\' )
 
 shopt -s extglob
 printf "Piping commands:\n"
