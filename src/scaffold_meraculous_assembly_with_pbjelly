@@ -10,7 +10,7 @@ fi
 # source PBJelly... why? no idea.
 # shellcheck disable=SC1091
 source bin/pbsuite/setup.sh
-pbjelly="bin/pbsuite/bin/Jelly.py"
+pbjelly="$(readlink -f bin/pbsuite/bin/Jelly.py)"
 
 # files
 contigs="$(readlink -f output/mt_contig/pilon/Scaffold2.fasta)"
@@ -23,10 +23,10 @@ jelly_protocol="${outdir}/jelly_protocol.xml"
 cat <<- _EOF_ > "${jelly_protocol}"
 <jellyProtocol>
     <reference>${contigs}</reference>
-    <outputDir>${outdir}/</outputDir>
+    <outputDir>${outdir}</outputDir>
     <blasr>-minMatch 8 -minPctIdentity 70 -bestn 1 -nCandidates 20
     -maxScore -500 -nproc 50 -noSplitSubreads</blasr>
-    <input baseDir="$(dirname "${pbjelly_lr}")/">
+    <input baseDir="$(dirname "${pbjelly_lr}")">
         <job>$(basename "${pbjelly_lr}")</job>
     </input>
 </jellyProtocol>
@@ -34,6 +34,10 @@ _EOF_
 
 # convert reads
 bin/bbmap/reformat.sh "in=${long_reads}" "out=${pbjelly_lr}"
+
+# run pbjelly in a subshell
+(
+cd "${outdir}" || exit 1
 
 # setup pbjelly
 "${pbjelly}" setup "${jelly_protocol}"
@@ -46,3 +50,4 @@ exit 1
 "${pbjelly}" extraction "${jelly_protocol}"
 "${pbjelly}" assembly "${jelly_protocol}"
 "${pbjelly}" output "${jelly_protocol}"
+    )
