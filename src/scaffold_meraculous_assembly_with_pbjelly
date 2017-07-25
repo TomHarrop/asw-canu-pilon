@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+set -eu
+
+outdir="output/mt_contig/pbjelly"
+if [[ ! -e "${outdir}" ]]; then
+    mkdir -p "${outdir}"
+fi
+
+# source PBJelly... why? no idea.
+# shellcheck disable=SC1091
+source bin/pbsuite/setup.sh
+pbjelly="bin/pbsuite/bin/Jelly.py"
+
+# files
+contigs="output/mt_contig/pilon/Scaffold2.fasta"
+long_reads="data/asw12_20170627_merged.fq.gz"
+
+# PBJelly config
+jelly_protocol="${outdir}/jelly_protocol.xml"
+cat <<- _EOF_ > "${jelly_protocol}"
+<jellyProtocol>
+    <reference>${contigs}</reference>
+    <outputDir>${outdir}</outputDir>
+    <blasr>-minMatch 8 -minPctIdentity 70 -bestn 1 -nCandidates 20
+    -maxScore -500 -nproc 50 -noSplitSubreads</blasr>
+    <input baseDir="$(dirname "${long_reads}")">
+        <job>$(basename "${long_reads}")</job>
+    </input>
+</jellyProtocol>
+_EOF_
+
+"${pbjelly}" setup "${jelly_protocol}"
+
