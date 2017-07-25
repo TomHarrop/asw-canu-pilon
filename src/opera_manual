@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+set -eu
+
+outdir="output/mt_contig/opera_manual"
+if [[ ! -e "${outdir}" ]]; then
+    mkdir -p "${outdir}"
+fi
+
+# files
+prefix="asw_mtdna"
+contigs="output/mt_contig/pilon/Scaffold2.fasta"
+my_contigs="${outdir}/contigs.fasta"
+long_reads="data/asw12_20170627_merged.fq.gz"
+samtools="bin/samtools/samtools"
+opera_dir="bin/opera-lg"
+short_reads="output/mt_contig/mapping/mapped_reads.fastq.gz"
+sr1="${outdir}/r1.fastq"
+sr2="${outdir}/r2.fastq"
+
+##########################
+# OPERA-long reads steps #
+##########################
+
+# 1. make bwa index
+printf "[ %s: Running bwa inded ]\n" "$(date)"
+
+cp "${contigs}" "${my_contigs}"
+cmd=( bwa index "${my_contigs}" )
+cmd_log="${outdir}/bwa_index.log"
+
+shopt -s extglob
+printf "Running command:\n"
+printf "%s " "${cmd[@]//+([[:blank:]])/ }"
+printf "\n"
+shopt -u extglob
+
+"${cmd[@]}" &> "${cmd_log}"
+
+# 2. map with bwa mem
+printf "[ %s: Running bwa mem ]\n" "$(date)"
+
+cmd1=( bwa mem -t 50 -p
+          ${my_contigs}
+          ${short_reads} )
+cmd1_log="${outdir}/bwa_mem.log"
+
+cmd2=( "${samtools}" sort -@ 50 -l 9 -m 5G
+           -o "${outdir}/${prefix}.bam")
+cmd2_log="${outdir}/samtools_sort.log"
+
+shopt -s extglob
+printf "Piping commands:\n"
+printf "%s " "${cmd1[@]//+([[:blank:]])/ }"
+printf " | "
+printf "%s " "${cmd2[@]//+([[:blank:]])/ }"
+printf "\n"
+shopt -u extglob
+
+"${cmd1[@]}" 2> "${cmd1_log}" | "${cmd1[@]}" 2> "${cmd1_log}"
+
+exit 1
+
+
+# blasr  -nproc 50 -m 1 -minMatch 5 -bestn 10 -noSplitSubreads -advanceExactMatches 1 -nCandidates 1 -maxAnchorsPerPosition 1 -sdpTupleSize 7 /Volumes/BiocArchive/archive/deardenlab/minion/basecalled/asw12_20170627/merged/merged.fq.gz /Volumes/BiocArchive/staff_users/tomharrop/asw-canu-pilon/output/mt_contig/pilon/Scaffold2.fasta | cut -d ' ' -f1-5,7-12 | sed 's/ /\t/g' > asw_mtdna.map
+# Mapping long-reads using blasr...
+# sort -k1,1 -k9,9g  asw_mtdna.map > asw_mtdna.map.sort

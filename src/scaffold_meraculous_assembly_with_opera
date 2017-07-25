@@ -14,10 +14,11 @@ long_reads="$(readlink -f data/asw12_20170627_merged.fq.gz)"
 samtools_dir="$(readlink -f bin/samtools)"
 opera_dir="$(readlink -f bin/opera-lg)"
 short_reads="$(readlink -f output/mt_contig/mapping/mapped_reads.fastq.gz)"
-sr1="$(readlink -f ${outdir}/r1.fasta)"
-sr2="$(readlink -f ${outdir}/r2.fasta)"
+sr1="$(readlink -f ${outdir}/r1.fastq)"
+sr2="$(readlink -f ${outdir}/r2.fastq)"
 
 # demux reads
+printf "[ %s: Demuxing short reads ]\n" "$(date)"
 cmd=( bin/bbmap/reformat.sh
           "in=${short_reads}"
           "out=${sr1}"
@@ -37,8 +38,9 @@ shopt -u extglob
 # This doesn't work because the OPERA-long-read script is broken. So far, I've
 # found the following problems:
 # It uses old samtools options. Workaround: use samtools 0.1.19-44428cd
-
+# The bamfile output is not actually BAM
 # BLASR doesn't work.
+
 printf "[ %s: Running OPERA-LG ]\n" "$(date)"
 cmd_log="${outdir}/opera.log"
 cmd=( bin/opera-lg/OPERA-long-read.pl
@@ -62,23 +64,3 @@ shopt -u extglob
 
 
 exit 1
-
-##########################
-# OPERA-long reads steps #
-##########################
-
-# 1. make bwa index
-bwa_log="${outdir}/bwa_index.log"
-cp "${contigs}" "${my_contigs}"
-cmd=( bwa index "${my_contigs}" )
-
-shopt -s extglob
-printf "Running command:\n"
-printf "%s " "${cmd[@]//+([[:blank:]])/ }"
-printf "\n"
-shopt -u extglob
-
-"${cmd[@]}" &> "${bwa_log}"
-
-# 2. 
-
