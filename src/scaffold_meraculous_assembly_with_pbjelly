@@ -2,7 +2,7 @@
 
 set -eu
 
-outdir="output/mt_contig/pbjelly"
+outdir="$(readlink -f output/mt_contig/pbjelly)"
 if [[ ! -e "${outdir}" ]]; then
     mkdir -p "${outdir}"
 fi
@@ -13,7 +13,7 @@ source bin/pbsuite/setup.sh
 pbjelly="bin/pbsuite/bin/Jelly.py"
 
 # files
-contigs="output/mt_contig/pilon/Scaffold2.fasta"
+contigs="$(readlink -f output/mt_contig/pilon/Scaffold2.fasta)"
 long_reads="data/asw12_20170627_merged.fq.gz"
 pbjelly_lr="${outdir}/long_reads.fastq"
 
