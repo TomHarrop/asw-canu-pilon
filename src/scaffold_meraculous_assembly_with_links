@@ -24,7 +24,7 @@ _EOF_
 cmd=( "${links}"
           -f "${contigs_path}"
           -s "${fof}"
-          -d "500,1000,2000,3000,4000,5000"
+          -d "3000,5000,10000,20000"
           -b "asw_mtdna" )
 cmd_log="$(readlink -f "${outdir}/links.log")"
 
