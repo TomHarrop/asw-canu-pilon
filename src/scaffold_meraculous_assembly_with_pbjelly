@@ -34,24 +34,36 @@ cat <<- _EOF_ > "${jelly_protocol}"
 _EOF_
 
 # copy contigs
+printf "[ %s: Copying contigs to outdir ]\n" "$(date)"
 cp "${contigs}" "${my_contigs}"
 
 # convert reads
+printf "[ %s: Unzipping long reads ]\n" "$(date)"
 bin/bbmap/reformat.sh "in=${long_reads}" "out=${pbjelly_lr}"
 
 # run pbjelly in a subshell
 (
 cd "${outdir}" || exit 1
+printf "[ %s: Opening a subshell and changing wd ]\n" "$(date)"
+printf "pwd: %s\n" "$(pwd)"
 
 # setup pbjelly
+printf "[ %s: Running PBJelly setup ]\n" "$(date)"
 "${pbjelly}" setup "${jelly_protocol}"
 
-exit 1
-
 # pbjelly steps
+printf "[ %s: Running PBJelly mapping ]\n" "$(date)"
 "${pbjelly}" mapping "${jelly_protocol}"
+
+printf "[ %s: Running PBJelly support ]\n" "$(date)"
 "${pbjelly}" support "${jelly_protocol}"
+
+printf "[ %s: Running PBJelly extraction ]\n" "$(date)"
 "${pbjelly}" extraction "${jelly_protocol}"
+
+printf "[ %s: Running PBJelly assembly ]\n" "$(date)"
 "${pbjelly}" assembly "${jelly_protocol}"
+
+printf "[ %s: Running PBJelly output ]\n" "$(date)"
 "${pbjelly}" output "${jelly_protocol}"
     )
