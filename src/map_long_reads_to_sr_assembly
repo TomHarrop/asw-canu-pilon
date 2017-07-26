@@ -39,8 +39,10 @@ bwa index "${mt_assembly}"
 
 # map long reads
 printf "[ %s: Running bwa mem ]\n" "$(date)"
-cmd1=( bwa mem -t 50 -p
-          -k11 -W20 -r10 -A1 -B1 -O1 -E1 -L0 -a -Y
+# npscarf settings: 
+# -k11 -W20 -r10 -A1 -B1 -O1 -E1 -L0 -a -Y
+cmd1=( bwa mem -t 50
+          -x ont2d
           ${mt_assembly}
           ${my_lr} )
 cmd1_log="${outdir}/bwa_mem.log"
