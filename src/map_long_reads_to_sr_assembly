@@ -9,14 +9,13 @@ fi
 
 samtools=bin/samtools/samtools
 
- mer_fasta="output/mt_contig/meraculous/"
-mer_fasta+="meraculous_final_results/final.scaffolds.fa"
+pilon_fasta="output/mt_contig/pilon/Scaffold2.fasta"
 mt_assembly="${outdir}/mt_assembly.fasta"
 long_reads="data/asw12_20170627_merged.fq.gz"
 output_bam="${outdir}/lr_mapped.bam"
 
 printf "[ %s: Running bwa index ]\n" "$(date)"
-cp "${mer_fasta}" "${mt_assembly}"
+cp "${pilon_fasta}" "${mt_assembly}"
 bwa index "${mt_assembly}"
 
 # map long reads
