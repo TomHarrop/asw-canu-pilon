@@ -12,8 +12,26 @@ samtools=bin/samtools/samtools
 pilon_fasta="output/mt_contig/pilon/Scaffold2.fasta"
 mt_assembly="${outdir}/mt_assembly.fasta"
 long_reads="data/asw12_20170627_merged.fq.gz"
+my_lr="${outdir}/lr.fq.gz"
 output_bam="${outdir}/lr_mapped.bam"
 
+# filter reads < 4 kb
+printf "[ %s: Filtering long reads ]\n" "$(date)"
+cmd=( bin/bbmap/reformat.sh 
+          "in=${long_reads}" 
+          "out=${my_lr}"
+          minlength=4000 )
+cmd_log="${outdir}/reformat.log"
+
+shopt -s extglob
+printf "Running command:\n"
+printf "%s " "${cmd[@]//+([[:blank:]])/ }"
+printf "\n"
+shopt -u extglob
+
+"${cmd[@]}" &> "${cmd_log}"
+
+# index contigs
 printf "[ %s: Running bwa index ]\n" "$(date)"
 sed "s/^>.*/>Scaffold2/" "${pilon_fasta}" \
     > "${mt_assembly}"
@@ -24,10 +42,10 @@ printf "[ %s: Running bwa mem ]\n" "$(date)"
 cmd1=( bwa mem -t 50 -p
           -k11 -W20 -r10 -A1 -B1 -O1 -E1 -L0 -a -Y
           ${mt_assembly}
-          ${long_reads} )
+          ${my_lr} )
 cmd1_log="${outdir}/bwa_mem.log"
 
-cmd2=( "${samtools}" view -h -F 4 )
+cmd2=( "${samtools}" view -h -F 2308 )
 cmd2_log="${outdir}/samtools_view.log"
 
 cmd3=( "${samtools}" sort -@ 50 -l 9 -m 5G
