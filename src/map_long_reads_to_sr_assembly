@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -eu
+
+outdir="output/mt_contig/long_reads_mapped_to_sr_assembly"
+if [[ ! -e "${outdir}" ]]; then
+    mkdir -p "${outdir}"
+fi
+
+samtools=bin/samtools/samtools
+
+ mer_fasta="output/mt_contig/meraculous/"
+mer_fasta+="meraculous_final_results/final.scaffolds.fa"
+mt_assembly="${outdir}/mt_assembly.fasta"
+long_reads="data/asw12_20170627_merged.fq.gz"
+output_bam="${outdir}/lr_mapped.bam"
+
+printf "[ %s: Running bwa index ]\n" "$(date)"
+cp "${mer_fasta}" "${mt_assembly}"
+bwa index "${mt_assembly}"
+
+# map long reads
+cmd1=( bwa mem -t 50 -p
+          -k11 -W20 -r10 -A1 -B1 -O1 -E1 -L0 -a -Y
+          ${mt_assembly}
+          ${long_reads} )
+cmd1_log="${outdir}/bwa_mem.log"
+
+cmd2=( "${samtools}" sort -@ 50 -l 9 -m 5G
+           -o "${output_bam}"
+           --reference "${mt_assembly}" )
+cmd2_log="${outdir}/samtools_sort.log"
+
+shopt -s extglob
+printf "Piping commands:\n"
+printf "%s " "${cmd1[@]//+([[:blank:]])/ }"
+printf " | "
+printf "%s " "${cmd2[@]//+([[:blank:]])/ }"
+printf "\n"
+shopt -u extglob
+
+"${cmd1[@]}" 2> "${cmd1_log}" | "${cmd2[@]}" 2> "${cmd2_log}"
+
+printf "[ %s: Running samtools index ]\n" "$(date)"
+"${samtools}" index "${output_bam}"
+
+exit 0
