@@ -19,26 +19,34 @@ cp "${pilon_fasta}" "${mt_assembly}"
 bwa index "${mt_assembly}"
 
 # map long reads
+printf "[ %s: Running bwa mem ]\n" "$(date)"
 cmd1=( bwa mem -t 50 -p
           -k11 -W20 -r10 -A1 -B1 -O1 -E1 -L0 -a -Y
           ${mt_assembly}
           ${long_reads} )
 cmd1_log="${outdir}/bwa_mem.log"
 
-cmd2=( "${samtools}" sort -@ 50 -l 9 -m 5G
+cmd2=( "${samtools}" view -h -F 4 )
+cmd2_log="${outdir}/samtools_view.log"
+
+cmd3=( "${samtools}" sort -@ 50 -l 9 -m 5G
            -o "${output_bam}"
            --reference "${mt_assembly}" )
-cmd2_log="${outdir}/samtools_sort.log"
+cmd3_log="${outdir}/samtools_sort.log"
 
 shopt -s extglob
 printf "Piping commands:\n"
 printf "%s " "${cmd1[@]//+([[:blank:]])/ }"
 printf " | "
 printf "%s " "${cmd2[@]//+([[:blank:]])/ }"
+printf " | "
+printf "%s " "${cmd3[@]//+([[:blank:]])/ }"
 printf "\n"
 shopt -u extglob
 
-"${cmd1[@]}" 2> "${cmd1_log}" | "${cmd2[@]}" 2> "${cmd2_log}"
+"${cmd1[@]}" 2> "${cmd1_log}" \
+    | "${cmd2[@]}" 2> "${cmd2_log}" \
+    | "${cmd3[@]}" 2> "${cmd3_log}"
 
 printf "[ %s: Running samtools index ]\n" "$(date)"
 "${samtools}" index "${output_bam}"
