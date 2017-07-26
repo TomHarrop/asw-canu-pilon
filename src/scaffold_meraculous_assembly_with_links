@@ -12,7 +12,7 @@ links="$(readlink -f bin/links/LINKS)"
 long_reads="data/asw12_20170627_merged.fq.gz"
 long_read_path="$(readlink -f "${long_reads}")"
 
-contigs="output/mt_contig/pilon/Scaffold2.fasta"
+contigs="output/mt_contig/meraculous/meraculous_gap_closure/final.contigs.fa"
 contigs_path="$(readlink -f "${contigs}")"
 
 # long read file-of-filenames, ok then...?
