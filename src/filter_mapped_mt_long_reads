@@ -12,29 +12,40 @@ fi
 # files
  mapped_long_reads="output/mt_contig/"
 mapped_long_reads+="long_reads_mapped_to_sr_assembly/lr_mapped.bam"
+tmp_fq="${outdir}/mt_long_reads_tmp.fq"
 output_lr="${outdir}/mt_long_reads.fq.gz"
+cmd_log="${outdir}/filterbyname.log"
 
 # filter reads 
-printf "[ %s: Running filterbyname.sh on mapped long reads ]\n" "$(date)"
-cmd1=( "${samtools}" view -h "${mapped_long_reads}" )
+printf "[ %s: Converting BAM to fq for names ]\n" "$(date)"
+cmd=( bin/bbmap/reformat.sh
+          "in=${mapped_long_reads}"
+          "out=${tmp_fq}" )
 
-cmd2=( bin/bbmap/filterbyname.sh 
+shopt -s extglob
+printf "Running command:\n"
+printf "%s " "${cmd[@]//+([[:blank:]])/ }"
+printf "\n"
+shopt -u extglob
+
+"${cmd[@]}" 2> "${cmd_log}"
+
+printf "[ %s: Running filterbyname.sh temporary fq ]\n" "$(date)"
+
+cmd=( bin/bbmap/filterbyname.sh 
           "in=data/asw12_20170627_merged.fq.gz"
-          "names=stdin.sam"
+          "names=${tmp_fq}"
           "include=t"
           "substring=name"
           "zl=9"
           "out=${output_lr}")
-cmd2_log="${outdir}/filterbyname.log"
 
 shopt -s extglob
-printf "Piping commands:\n"
-printf "%s " "${cmd1[@]//+([[:blank:]])/ }"
-printf " | "
-printf "%s " "${cmd2[@]//+([[:blank:]])/ }"
+printf "Running command:\n"
+printf "%s " "${cmd[@]//+([[:blank:]])/ }"
 printf "\n"
 shopt -u extglob
 
-"${cmd1[@]}" | "${cmd2[@]}" 2> "${cmd2_log}"
+"${cmd[@]}" 2>> "${cmd_log}"
 
 exit 0
