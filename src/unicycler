@@ -27,7 +27,7 @@ printf "%s " "${cmd[@]//+([[:blank:]])/ }"
 printf "\n"
 shopt -u extglob
 
-"${cmd[@]}" 2> "${cmd_log}"
+# "${cmd[@]}" 2> "${cmd_log}"
 
 # run unicycler
 printf "[ %s: Running unicycler ]\n" "$(date)"
@@ -39,11 +39,12 @@ cmd=( unicycler
         -o "${outdir}"
         --keep 2
         --no_correct
-        --pilon_path bin/pilon/pilon-1.22.jar
-        --bowtie2_path bin/bowtie/bowtie2
-        --bowtie2_build_path bin/bowtie/bowtie2-build
-        --samtools_path bin/samtools/samtools )
+        --pilon_path "$(readlink -f bin/pilon/pilon-1.22.jar)"
+        --bowtie2_path "$(readlink -f bin/bowtie/bowtie2)"
+        --bowtie2_build_path "$(readlink -f bin/bowtie/bowtie2-build)"
+        --samtools_path "$(readlink -f bin/samtools/samtools)" )
 cmd_log="${outdir}/unicycler.log"
+cmd_err="${outdir}/unicycler.err"
 
 shopt -s extglob
 printf "Running command:\n"
@@ -51,7 +52,7 @@ printf "%s " "${cmd[@]//+([[:blank:]])/ }"
 printf "\n"
 shopt -u extglob
 
-"${cmd[@]}" &> "${cmd_log}"
+"${cmd[@]}" > "${cmd_log}" 2> "${cmd_err}"
 
 
 exit 0
