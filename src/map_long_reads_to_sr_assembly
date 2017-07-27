@@ -73,3 +73,5 @@ printf "[ %s: Running samtools index ]\n" "$(date)"
 "${samtools}" index "${output_bam}"
 
 exit 0
+
+## canu assemble these reads?
