@@ -39,7 +39,9 @@ cmd=( unicycler
         -l "${long_reads}" 
         -o "${outdir}"
         --keep 3
+        --no_correct
         --start_genes "${start_genes}"
+        --start_gene_id 85
         --pilon_path "$(readlink -f bin/pilon/pilon-1.22.jar)"
         --bowtie2_path "$(readlink -f bin/bowtie/bowtie2)"
         --bowtie2_build_path "$(readlink -f bin/bowtie/bowtie2-build)"
