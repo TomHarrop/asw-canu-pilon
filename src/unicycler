@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -eu
+
+outdir="output/mt_contig/unicycler"
+if [[ ! -e "${outdir}" ]]; then
+    mkdir -p "${outdir}"
+fi
+
+# files
+short_reads="output/bbnorm/normalised_reads.fastq.gz"
+sr1="${outdir}/sr1.fastq.gz"
+sr2="${outdir}/sr2.fastq.gz"
+long_reads="ouput/mt_contig/unicycler/trimmed_mt_reads.fastq.gz"
+
+# unpair short reads
+printf "[ %s: Demuxing short reads ]\n" "$(date)"
+cmd=( bin/bbmap/reformat.sh 
+        "in=${short_reads}"
+        "out=${sr1}"
+        "out2=${sr2}" )
+cmd_log="${outdir}/reformat.log"
+
+shopt -s extglob
+printf "Running command:\n"
+printf "%s " "${cmd[@]//+([[:blank:]])/ }"
+printf "\n"
+shopt -u extglob
+
+"${cmd[@]}" 2> "${cmd_log}"
+
+# run unicycler
+printf "[ %s: Running unicycler ]\n" "$(date)"
+cmd=( unicycler
+        --threads 50
+        -1 "${sr1}" 
+        -2 "${sr2}" 
+        -l "${long_reads}" 
+        -o "${outdir}"
+        --keep 2
+        --no_correct
+        --pilon_path bin/pilon/pilon-1.22.jar
+        --bowtie2_path bin/bowtie/bowtie
+        --bowtie2_build_path bin/bowtie/bowtie2_build
+        --samtools_path bin/samtools/samtools )
+
+exit 0

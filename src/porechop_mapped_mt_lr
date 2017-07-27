@@ -24,6 +24,6 @@ printf "%s " "${cmd[@]//+([[:blank:]])/ }"
 printf "\n"
 shopt -u extglob
 
-"${cmd[@]}" 2> "${cmd_log}"
+"${cmd[@]}" &> "${cmd_log}"
 
 exit 0
