@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -eu
+
+outdir="output/mt_contig/long_reads_mapped_to_sr_assembly"
+if [[ ! -e "${outdir}" ]]; then
+    mkdir -p "${outdir}"
+fi
+
+# filter reads 
+printf "[ %s: Running filterbyname.sh ]\n" "$(date)"
+cmd=( bin/bbmap/filterbyname.sh 
+          "in=data/asw12_20170627_merged.fq.gz"
+          "names=output/mt_contig/long_reads_mapped_to_sr_assembly/lr_mapped.bam"
+          "include=t"
+          "substring=name"
+          "zl=9"
+          "out=${outdir}/mt_long_reads.fq.gz")
+cmd_log="${outdir}/filterbyname.log"
+
+shopt -s extglob
+printf "Running command:\n"
+printf "%s " "${cmd[@]//+([[:blank:]])/ }"
+printf "\n"
+shopt -u extglob
+
+"${cmd[@]}" 2> "${cmd_log}"
+
+exit 0
