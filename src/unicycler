@@ -27,7 +27,7 @@ printf "%s " "${cmd[@]//+([[:blank:]])/ }"
 printf "\n"
 shopt -u extglob
 
-# "${cmd[@]}" 2> "${cmd_log}"
+"${cmd[@]}" 2> "${cmd_log}"
 
 # run unicycler
 printf "[ %s: Running unicycler ]\n" "$(date)"
