@@ -43,5 +43,15 @@ cmd=( unicycler
         --bowtie2_path bin/bowtie/bowtie
         --bowtie2_build_path bin/bowtie/bowtie2_build
         --samtools_path bin/samtools/samtools )
+cmd_log="${outdir}/unicycler.log"
+
+shopt -s extglob
+printf "Running command:\n"
+printf "%s " "${cmd[@]//+([[:blank:]])/ }"
+printf "\n"
+shopt -u extglob
+
+"${cmd[@]}" &> "${cmd_log}"
+
 
 exit 0
