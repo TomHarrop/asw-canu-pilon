@@ -40,8 +40,8 @@ cmd=( unicycler
         --keep 2
         --no_correct
         --pilon_path bin/pilon/pilon-1.22.jar
-        --bowtie2_path bin/bowtie/bowtie
-        --bowtie2_build_path bin/bowtie/bowtie2_build
+        --bowtie2_path bin/bowtie/bowtie2
+        --bowtie2_build_path bin/bowtie/bowtie2-build
         --samtools_path bin/samtools/samtools )
 cmd_log="${outdir}/unicycler.log"
 
