@@ -11,7 +11,7 @@ fi
 short_reads="output/mt_contig/bbnorm/normalised_reads.fastq.gz"
 sr1="${outdir}/sr1.fastq.gz"
 sr2="${outdir}/sr2.fastq.gz"
-long_reads="ouput/mt_contig/unicycler/trimmed_mt_reads.fastq.gz"
+long_reads="output/mt_contig/unicycler/trimmed_mt_reads.fastq.gz"
 
 # unpair short reads
 printf "[ %s: Demuxing short reads ]\n" "$(date)"
