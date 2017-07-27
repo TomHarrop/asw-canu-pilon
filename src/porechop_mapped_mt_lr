@@ -11,9 +11,6 @@ fi
 mapped_long_reads+="long_reads_mapped_to_sr_assembly/mt_long_reads.fq.gz"
 trimmed_reads="${outdir}/trimmed_mt_reads.fastq.gz"
 
-# activate porechop
-source .venv/bin/activate
-
 # run porechop
 cmd=( porechop
           --threads 50
