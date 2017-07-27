@@ -16,7 +16,7 @@ tmp_fq="${outdir}/mt_long_reads_tmp.fq"
 output_lr="${outdir}/mt_long_reads.fq.gz"
 cmd_log="${outdir}/filterbyname.log"
 
-# filter reads 
+# expand BAM to fq 
 printf "[ %s: Converting BAM to fq for names ]\n" "$(date)"
 cmd=( bin/bbmap/reformat.sh
           "in=${mapped_long_reads}"
@@ -30,8 +30,8 @@ shopt -u extglob
 
 "${cmd[@]}" 2> "${cmd_log}"
 
+# filter reads
 printf "[ %s: Running filterbyname.sh temporary fq ]\n" "$(date)"
-
 cmd=( bin/bbmap/filterbyname.sh 
           "in=data/asw12_20170627_merged.fq.gz"
           "names=${tmp_fq}"
@@ -47,5 +47,8 @@ printf "\n"
 shopt -u extglob
 
 "${cmd[@]}" 2>> "${cmd_log}"
+
+# remove tmp files
+rm "${tmp_fq}"
 
 exit 0
