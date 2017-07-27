@@ -8,7 +8,7 @@ if [[ ! -e "${outdir}" ]]; then
 fi
 
 # files
-short_reads="output/bbnorm/normalised_reads.fastq.gz"
+short_reads="output/mt_contig/bbnorm/normalised_reads.fastq.gz"
 sr1="${outdir}/sr1.fastq.gz"
 sr2="${outdir}/sr2.fastq.gz"
 long_reads="ouput/mt_contig/unicycler/trimmed_mt_reads.fastq.gz"
