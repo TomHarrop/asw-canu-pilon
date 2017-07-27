@@ -2,28 +2,39 @@
 
 set -eu
 
+samtools=bin/samtools/samtools
+
 outdir="output/mt_contig/long_reads_mapped_to_sr_assembly"
 if [[ ! -e "${outdir}" ]]; then
     mkdir -p "${outdir}"
 fi
 
+# files
+ mapped_long_reads="output/mt_contig/"
+mapped_long_reads+="long_reads_mapped_to_sr_assembly/lr_mapped.bam"
+output_lr="${outdir}/mt_long_reads.fq.gz"
+
 # filter reads 
-printf "[ %s: Running filterbyname.sh ]\n" "$(date)"
-cmd=( bin/bbmap/filterbyname.sh 
+printf "[ %s: Running filterbyname.sh on mapped long reads ]\n" "$(date)"
+cmd1=( "${samtools}" view -h "${mapped_long_reads}" )
+
+cmd2=( bin/bbmap/filterbyname.sh 
           "in=data/asw12_20170627_merged.fq.gz"
-          "names=output/mt_contig/long_reads_mapped_to_sr_assembly/lr_mapped.bam"
+          "names=stdin.sam"
           "include=t"
           "substring=name"
           "zl=9"
-          "out=${outdir}/mt_long_reads.fq.gz")
-cmd_log="${outdir}/filterbyname.log"
+          "out=${output_lr}")
+cmd2_log="${outdir}/filterbyname.log"
 
 shopt -s extglob
-printf "Running command:\n"
-printf "%s " "${cmd[@]//+([[:blank:]])/ }"
+printf "Piping commands:\n"
+printf "%s " "${cmd1[@]//+([[:blank:]])/ }"
+printf " | "
+printf "%s " "${cmd2[@]//+([[:blank:]])/ }"
 printf "\n"
 shopt -u extglob
 
-"${cmd[@]}" 2> "${cmd_log}"
+"${cmd1[@]}" | "${cmd2[@]}" 2> "${cmd2_log}"
 
 exit 0
